@@ -1,6 +1,5 @@
 .idea/
 vendor/
-bin/
 
 .env
 .env.local
@@ -8,6 +7,3 @@ bin/
 
 var/
 node_modules/
-
-.DS_Store
-Thumbs.db
