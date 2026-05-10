@@ -1,0 +1,13 @@
+.idea/
+vendor/
+bin/
+
+.env
+.env.local
+.env.*.local
+
+var/
+node_modules/
+
+.DS_Store
+Thumbs.db
