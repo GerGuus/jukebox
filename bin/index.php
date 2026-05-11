@@ -8,7 +8,9 @@ use App\Command\JukeboxCommand;
 use DI\ContainerBuilder;
 
 $containerBuilder = new ContainerBuilder();
+$containerBuilder->addDefinitions(__DIR__ . '/../config/container.php');
 $container = $containerBuilder->build();
+
 
 $command = $container->get(JukeboxCommand::class);
 $command->run();

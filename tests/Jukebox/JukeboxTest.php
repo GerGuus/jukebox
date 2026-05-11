@@ -8,8 +8,10 @@ use App\Entity\Track;
 use App\Jukebox\Jukebox;
 use App\Jukebox\State\IdleState;
 use App\Repository\TrackRepository;
+use App\Repository\TrackRepositoryInterface;
 use App\Service\ChangeCalculator;
 use App\Service\CoinValidator;
+use App\ValueObject\Money;
 use PHPUnit\Framework\TestCase;
 
 final class JukeboxTest extends TestCase
@@ -17,7 +19,7 @@ final class JukeboxTest extends TestCase
     public function testStoreSelectedTrack(): void
     {
         $jukebox = $this->createJukebox();
-        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', 1.20);
+        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
         $jukebox->setSelectedTrack($track);
 
@@ -28,8 +30,8 @@ final class JukeboxTest extends TestCase
     {
         $jukebox = $this->createJukebox();
 
-        $jukebox->addInsertedAmount(0.25);
-        $jukebox->addInsertedAmount(1.00);
+        $jukebox->addInsertedAmount(Money::createFromCents(25));
+        $jukebox->addInsertedAmount(Money::createFromCents(100));
 
         self::assertEquals(1.25, $jukebox->getInsertedAmount());
     }
@@ -37,22 +39,22 @@ final class JukeboxTest extends TestCase
     public function testResetClearsSelectedTrackAndAmount(): void
     {
         $jukebox = $this->createJukebox();
-        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', 1.20);
+        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
         $jukebox->setSelectedTrack($track);
-        $jukebox->addInsertedAmount(1.00);
+        $jukebox->addInsertedAmount(Money::createFromCents(100));
         $jukebox->reset();
 
         self::assertNull($jukebox->getSelectedTrack());
-        self::assertEquals(0.0, $jukebox->getInsertedAmount());
+        self::assertEquals(0.0, $jukebox->getInsertedAmount()->toCents());
     }
 
     private function createJukebox(): Jukebox
     {
-        $repository = new TrackRepository();
-        $coinValidator = new CoinValidator();
-        $changeCalculator = new ChangeCalculator();
-
-        return new Jukebox($repository, $coinValidator, $changeCalculator);
+        return  new Jukebox(
+            $this->createMock(TrackRepositoryInterface::class),
+            new CoinValidator(),
+            new ChangeCalculator()
+        );
     }
 }

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jukebox\State;
 
-use App\Repository\TrackRepository;
 use App\Jukebox\Jukebox;
+use App\ValueObject\Money;
 
 class IdleState implements JukeboxState
 {
@@ -45,7 +47,7 @@ class IdleState implements JukeboxState
     }
 
 
-    public function insertCoin(float $coin): void
+    public function insertCoin(Money $coin): void
     {
         echo "Select track first\n";
     }

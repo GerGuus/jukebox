@@ -7,9 +7,10 @@ namespace Tests\Jukebox\State;
 use App\Entity\Track;
 use App\Jukebox\Jukebox;
 use App\Jukebox\State\IdleState;
-use App\Repository\TrackRepository;
+use App\Repository\TrackRepositoryInterface;
 use App\Service\ChangeCalculator;
 use App\Service\CoinValidator;
+use App\ValueObject\Money;
 use PHPUnit\Framework\TestCase;
 use Tests\Helpers\OutputCaptureHelper;
 
@@ -17,10 +18,10 @@ final class IdleStateTest extends TestCase
 {
     public function testShowTracksPrintsTrackList(): void
     {
-        $track1 = new Track('Oomph', 'Labyrinth', 1.50);
-        $track2 = new Track('Oomph', 'Beim erster Mal tuts immer weh', 1.20);
+        $track1 = new Track('Oomph', 'Labyrinth', Money::createFromCents(150));
+        $track2 = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
-        $repository = $this->createMock(TrackRepository::class);
+        $repository = $this->createMock(TrackRepositoryInterface::class);
         $repository->method('getAll')->willReturn([$track1, $track2]);
 
         $jukebox = new Jukebox($repository, new CoinValidator(), new ChangeCalculator());
@@ -36,9 +37,9 @@ final class IdleStateTest extends TestCase
 
     public function testSelectTrackByNumberSetsSelectedTrack(): void
     {
-        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', 1.20);
+        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
-        $repository = $this->createMock(TrackRepository::class);
+        $repository = $this->createMock(TrackRepositoryInterface::class);
         $repository->method('findByIndex')->with(0)->willReturn($track);
 
         $jukebox = new Jukebox($repository, new CoinValidator(), new ChangeCalculator());
@@ -51,9 +52,9 @@ final class IdleStateTest extends TestCase
 
     public function testSelectTrackByTitleSetsSelectedTrack(): void
     {
-        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', 1.20);
+        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
-        $repository = $this->createMock(TrackRepository::class);
+        $repository = $this->createMock(TrackRepositoryInterface::class);
         $repository->method('findByTitle')->with('Beim erster Mal tuts immer weh')->willReturn($track);
 
         $jukebox = new Jukebox($repository, new CoinValidator(), new ChangeCalculator());
@@ -66,7 +67,7 @@ final class IdleStateTest extends TestCase
 
     public function testSelectTrackPrintsErrorWhenTrackNotFound(): void
     {
-        $repository = $this->createMock(TrackRepository::class);
+        $repository = $this->createMock(TrackRepositoryInterface::class);
         $repository->method('findByTitle')->willReturn(null);
 
         $jukebox = new Jukebox($repository, new CoinValidator(), new ChangeCalculator());

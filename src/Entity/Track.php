@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
+
+use App\ValueObject\Money;
 
 class Track
 {
     public function __construct(
         private string $artist,
         private string $title,
-        private float $price
+        private Money $price,
     ) {
     }
 
@@ -21,7 +25,7 @@ class Track
         return $this->title;
     }
 
-    public function getPrice(): float
+    public function getPrice(): Money
     {
         return $this->price;
     }

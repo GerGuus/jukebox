@@ -1,20 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
+
+use App\ValueObject\Money;
 
 class CoinValidator
 {
-    private const ALLOWED_COINS = [
-        0.01,
-        0.05,
-        0.10,
-        0.25,
-        0.50,
-        1.00,
-    ];
+    private const ALLOWED_COINS = [1, 2, 5, 10, 25, 50, 100];
 
-    public function isValid(float $coin): bool
+    public function isValid(Money $coin): bool
     {
-        return in_array($coin, self::ALLOWED_COINS, true);
+        return in_array($coin->toCents(), self::ALLOWED_COINS, true);
     }
 }

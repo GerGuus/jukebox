@@ -8,9 +8,11 @@ use App\Entity\Track;
 use App\Jukebox\Jukebox;
 use App\Jukebox\State\PlayingState;
 use App\Repository\TrackRepository;
+use App\Repository\TrackRepositoryInterface;
 use App\Service\ChangeCalculator;
 use App\Service\CoinValidator;
 use App\Service\PlaybackService;
+use App\ValueObject\Money;
 use PHPUnit\Framework\TestCase;
 use Tests\Helpers\OutputCaptureHelper;
 
@@ -18,11 +20,16 @@ final class PlayingStateTest extends TestCase
 {
     public function testPlayPrintsTrackName(): void
     {
-        $jukebox = new Jukebox(new TrackRepository(), new CoinValidator(), new ChangeCalculator());
-        $track = new Track('Oomph', 'Labyrinth', 1.50);
+        $jukebox = new Jukebox(
+            $this->createMock(TrackRepositoryInterface::class),
+            new CoinValidator(),
+            new ChangeCalculator()
+        );
+
+        $track = new Track('Oomph', 'Labyrinth', Money::createFromCents(150));
 
         $jukebox->setSelectedTrack($track);
-        $jukebox->addInsertedAmount(1.50);
+        $jukebox->addInsertedAmount(Money::createFromCents(150));
 
         $playbackService = $this->createMock(PlaybackService::class);
         $playbackService
@@ -40,11 +47,15 @@ final class PlayingStateTest extends TestCase
 
     public function testPlayPrintsChangeWhenNeeded(): void
     {
-        $jukebox = new Jukebox(new TrackRepository(), new CoinValidator(), new ChangeCalculator());
-        $track = new Track('Oomph', 'Labyrinth', 1.50);
+        $jukebox = new Jukebox(
+            $this->createMock(TrackRepositoryInterface::class),
+            new CoinValidator(),
+            new ChangeCalculator()
+        );
+        $track = new Track('Oomph', 'Labyrinth', Money::createFromCents(150));
 
         $jukebox->setSelectedTrack($track);
-        $jukebox->addInsertedAmount(2.00);
+        $jukebox->addInsertedAmount(Money::createFromCents(200));
 
         $playbackService = $this->createMock(PlaybackService::class);
         $playbackService
@@ -62,11 +73,15 @@ final class PlayingStateTest extends TestCase
 
     public function testPlayResetsJukeboxAfterPlayback(): void
     {
-        $jukebox = new Jukebox(new TrackRepository(), new CoinValidator(), new ChangeCalculator());
-        $track = new Track('Oomph', 'Labyrinth', 1.50);
+        $jukebox = new Jukebox(
+            $this->createMock(TrackRepositoryInterface::class),
+            new CoinValidator(),
+            new ChangeCalculator()
+        );
+        $track = new Track('Oomph', 'Labyrinth', Money::createFromCents(150));
 
         $jukebox->setSelectedTrack($track);
-        $jukebox->addInsertedAmount(2.00);
+        $jukebox->addInsertedAmount(Money::createFromCents(200));
 
         $playbackService = $this->createMock(PlaybackService::class);
         $playbackService
@@ -77,6 +92,6 @@ final class PlayingStateTest extends TestCase
         $state->play();
 
         self::assertNull($jukebox->getSelectedTrack());
-        self::assertEquals(0.0, $jukebox->getInsertedAmount());
+        self::assertEquals(0.0, $jukebox->getInsertedAmount()->toCents());
     }
 }

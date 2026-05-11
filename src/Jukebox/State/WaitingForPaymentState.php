@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jukebox\State;
 
 use App\Entity\Track;
 use App\Jukebox\Jukebox;
+use App\ValueObject\Money;
 
 class WaitingForPaymentState implements JukeboxState
 {
@@ -22,7 +25,7 @@ class WaitingForPaymentState implements JukeboxState
         echo "Track already selected" . "\n";
     }
 
-    public function insertCoin(float $coin): void
+    public function insertCoin(Money $coin): void
     {
         $track = $this->jukebox->getSelectedTrack();
 
@@ -39,13 +42,11 @@ class WaitingForPaymentState implements JukeboxState
 
         $this->jukebox->addInsertedAmount($coin);
 
-        echo 'Inserted: ' . $coin . "\n";
-        echo 'Total: ' . $this->jukebox->getInsertedAmount() . "\n";
-
-        if ($this->jukebox->getInsertedAmount() >= $track->getPrice()) {
+        if ($this->jukebox->getInsertedAmount()->greaterThanOrEqual($track->getPrice())) {
             $this->jukebox->setState(new PlayingState($this->jukebox));
         } else {
-            $remaining = $track->getPrice() - $this->jukebox->getInsertedAmount();
+            $remaining = clone $track->getPrice();
+            $remaining->subtract($this->jukebox->getInsertedAmount());
             echo 'Remaining: ' . $remaining . "\n";
         }
     }

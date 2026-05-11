@@ -1,27 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
+
+use App\ValueObject\Money;
 
 class ChangeCalculator
 {
-    private const COINS = [
-        1.00,
-        0.50,
-        0.25,
-        0.10,
-        0.05,
-        0.01,
-    ];
+    private const COINS = [100, 50, 25, 10, 5, 1];
 
-    public function calculate(float $change): array
+    public function calculate(Money $change): array
     {
+        $remaining = $change->toCents();
         $result = [];
 
         foreach (self::COINS as $coin) {
-            while ($change >= $coin) {
-                $result[] = $coin;
+            while ($remaining >= $coin) {
+                $result[] = $coin / 100;
 
-                $change = round($change - $coin, 2);
+                $remaining -= $coin;
             }
         }
 

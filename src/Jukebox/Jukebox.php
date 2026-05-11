@@ -1,27 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jukebox;
 
 use App\Entity\Track;
 use App\Jukebox\State\IdleState;
 use App\Jukebox\State\JukeboxState;
-use App\Repository\TrackRepository;
+use App\Repository\TrackRepositoryInterface;
 use App\Service\ChangeCalculator;
 use App\Service\CoinValidator;
+use App\ValueObject\Money;
 
 class Jukebox
 {
     private JukeboxState $currentState;
     private ?Track $selectedTrack = null;
-    private float $insertedAmount = 0;
+    private Money $insertedAmount;
 
     public function __construct(
-        private TrackRepository $trackRepository,
+        private TrackRepositoryInterface $trackRepository,
         private CoinValidator $coinValidator,
         private ChangeCalculator $changeCalculator,
     )
     {
         $this->currentState = new IdleState($this);
+        $this->insertedAmount = Money::createWithZero();
     }
 
     public function setState(JukeboxState $state): void
@@ -39,7 +43,7 @@ class Jukebox
         $this->currentState->selectTrack($input);
     }
 
-    public function insertCoin(float $coin): void
+    public function insertCoin(Money $coin): void
     {
         $this->currentState->insertCoin($coin);
     }
@@ -49,7 +53,7 @@ class Jukebox
         $this->currentState->play();
     }
 
-    public function getTrackRepository(): TrackRepository
+    public function getTrackRepository(): TrackRepositoryInterface
     {
         return $this->trackRepository;
     }
@@ -74,12 +78,12 @@ class Jukebox
         return $this->changeCalculator;
     }
 
-    public function addInsertedAmount(float $coin): void
+    public function addInsertedAmount(Money $coin): void
     {
-        $this->insertedAmount += $coin;
+        $this->insertedAmount->add($coin);
     }
 
-    public function getInsertedAmount(): float
+    public function getInsertedAmount(): Money
     {
         return $this->insertedAmount;
     }
@@ -87,6 +91,6 @@ class Jukebox
     public function reset(): void
     {
         $this->selectedTrack = null;
-        $this->insertedAmount = 0;
+        $this->insertedAmount = Money::createWithZero();
     }
 }

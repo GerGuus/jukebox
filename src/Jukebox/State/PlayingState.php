@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jukebox\State;
 
 use App\Jukebox\Jukebox;
 use App\Service\PlaybackService;
+use App\ValueObject\Money;
 
 class PlayingState implements JukeboxState
 {
@@ -23,7 +26,7 @@ class PlayingState implements JukeboxState
         echo "Playback in progress" . "\n";
     }
 
-    public function insertCoin(float $coin): void
+    public function insertCoin(Money $coin): void
     {
         echo "Playback in progress" . "\n";
     }
@@ -38,9 +41,10 @@ class PlayingState implements JukeboxState
             return;
         }
 
-        $change = $this->jukebox->getInsertedAmount() - $track->getPrice();
+        $change = $this->jukebox->getInsertedAmount();
+        $change->subtract($track->getPrice());
 
-        if ($change > 0) {
+        if ($change->toCents() > 0) {
             $coins = $this->jukebox->getChangeCalculator()->calculate($change);
 
             echo "Change: " . implode(', ', $coins) . "\n";
