@@ -33,7 +33,7 @@ final class JukeboxTest extends TestCase
         $jukebox->addInsertedAmount(Money::createFromCents(25));
         $jukebox->addInsertedAmount(Money::createFromCents(100));
 
-        self::assertEquals(1.25, $jukebox->getInsertedAmount());
+        self::assertEquals(125, $jukebox->getInsertedAmount()->toCents());
     }
 
     public function testResetClearsSelectedTrackAndAmount(): void

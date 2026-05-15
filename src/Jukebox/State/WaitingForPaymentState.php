@@ -45,8 +45,7 @@ class WaitingForPaymentState implements JukeboxState
         if ($this->jukebox->getInsertedAmount()->greaterThanOrEqual($track->getPrice())) {
             $this->jukebox->setState(new PlayingState($this->jukebox));
         } else {
-            $remaining = clone $track->getPrice();
-            $remaining->subtract($this->jukebox->getInsertedAmount());
+            $remaining = $track->getPrice()->subtract($this->jukebox->getInsertedAmount());
             echo 'Remaining: ' . $remaining . "\n";
         }
     }

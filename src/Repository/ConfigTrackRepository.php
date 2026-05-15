@@ -9,15 +9,9 @@ use App\ValueObject\Money;
 
 class ConfigTrackRepository implements TrackRepositoryInterface
 {
-    private array $tracks;
-
     public function __construct(
-        ?string $configPath = null,
-    )
-    {
-        $path = $configPath ?? __DIR__ . '/../../config/tracks.php';
-
-        $this->tracks = require $path;
+        private array $tracks,
+    ) {
     }
 
     public function getAll(): array
@@ -41,7 +35,7 @@ class ConfigTrackRepository implements TrackRepositoryInterface
     public function findByTitle(string $title): ?Track
     {
         foreach ($this->tracks as $track) {
-            if (strtolower($track->getTitle()) === strtolower($title)) {
+            if (mb_strtolower($track['title']) === mb_strtolower($title)) {
                 return $this->mapToTrack($track);
             }
         }

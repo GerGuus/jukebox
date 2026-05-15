@@ -37,18 +37,18 @@ final class Money
         return new self((int) round((float) $normalized * 100));
     }
 
-    public function add(self $other): void
+    public function add(self $other): Money
     {
-        $this->amount = $this->amount + $other->toCents();
+        return new self($this->amount + $other->toCents());
     }
 
-    public function subtract(self $other): void
+    public function subtract(self $other): Money
     {
         if ($other->amount > $this->amount) {
             throw new InvalidArgumentException('Result cannot be negative');
         }
 
-        $this->amount -= $other->amount;
+        return new self($this->amount - $other->amount);
     }
 
     public function greaterThanOrEqual(self $other): bool

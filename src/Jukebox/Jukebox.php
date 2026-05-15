@@ -80,7 +80,7 @@ class Jukebox
 
     public function addInsertedAmount(Money $coin): void
     {
-        $this->insertedAmount->add($coin);
+        $this->insertedAmount = $this->insertedAmount->add($coin);
     }
 
     public function getInsertedAmount(): Money

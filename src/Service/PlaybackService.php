@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Output\ConsoleOutput;
-
-class PlaybackService
+final class PlaybackService
 {
     public function imitatePlaying(): void
     {
-        $output = new ConsoleOutput();
-        $progressBar = new ProgressBar($output, 50);
-        $progressBar->setFormat('Playing [%bar%] %percent:3s%%');
-        $progressBar->start();
+        $steps = 20;
 
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i <= $steps; $i++) {
+            $percent = (int) (($i / $steps) * 100);
+            $bar = str_repeat('#', $i) . str_repeat('-', $steps - $i);
+
+            echo "\rPlaying [{$bar}] {$percent}%";
+
             usleep(200000);
-            $progressBar->advance();
         }
 
-        $progressBar->finish();
-        $output->writeln('');
+        echo PHP_EOL;
     }
 }

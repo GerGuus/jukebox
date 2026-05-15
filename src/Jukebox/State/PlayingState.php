@@ -41,8 +41,7 @@ class PlayingState implements JukeboxState
             return;
         }
 
-        $change = $this->jukebox->getInsertedAmount();
-        $change->subtract($track->getPrice());
+        $change = $this->jukebox->getInsertedAmount()->subtract($track->getPrice());
 
         if ($change->toCents() > 0) {
             $coins = $this->jukebox->getChangeCalculator()->calculate($change);
