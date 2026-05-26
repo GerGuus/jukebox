@@ -8,8 +8,10 @@ use App\Entity\Track;
 use App\Jukebox\State\IdleState;
 use App\Jukebox\State\JukeboxState;
 use App\Repository\TrackRepositoryInterface;
+use App\Service\AnalyticsClient;
 use App\Service\ChangeCalculator;
 use App\Service\CoinValidator;
+use App\Service\PlaybackService;
 use App\ValueObject\Money;
 
 class Jukebox
@@ -22,6 +24,8 @@ class Jukebox
         private TrackRepositoryInterface $trackRepository,
         private CoinValidator $coinValidator,
         private ChangeCalculator $changeCalculator,
+        private PlaybackService $playbackService,
+        private AnalyticsClient $analyticsClient,
     )
     {
         $this->currentState = new IdleState($this);
@@ -56,6 +60,16 @@ class Jukebox
     public function getTrackRepository(): TrackRepositoryInterface
     {
         return $this->trackRepository;
+    }
+
+    public function getPlaybackService(): PlaybackService
+    {
+        return $this->playbackService;
+    }
+
+    public function getAnalyticsClient(): AnalyticsClient
+    {
+        return $this->analyticsClient;
     }
 
     public function setSelectedTrack(Track $track): void

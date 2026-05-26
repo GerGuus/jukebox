@@ -1,0 +1,20 @@
+name: jukebox
+
+services:
+  jukebox:
+    build:
+      context: .
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/app
+    command: php bin/index.php
+    networks:
+      - default
+      - analytics
+
+networks:
+  analytics:
+    external: true
+    name: jukebox-analytics_default

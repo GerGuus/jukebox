@@ -12,7 +12,6 @@ class PlayingState implements JukeboxState
 {
     public function __construct(
         private Jukebox $jukebox,
-        private PlaybackService $playbackService = new PlaybackService(),
     ) {
     }
 
@@ -49,8 +48,13 @@ class PlayingState implements JukeboxState
             echo "Change: " . implode(', ', $coins) . "\n";
         }
 
+        $this->jukebox->getAnalyticsClient()->sendTrackPlayed(
+            $track,
+            $this->jukebox->getInsertedAmount()->format(),
+        );
+
         echo "Now playing: " . $track->getDisplayName() . "\n";
-        $this->playbackService->imitatePlaying();
+        $this->jukebox->getPlaybackService()->imitatePlaying();
 
         $this->jukebox->reset();
         $this->jukebox->setState(new IdleState($this->jukebox));

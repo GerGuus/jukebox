@@ -46,6 +46,7 @@ class ConfigTrackRepository implements TrackRepositoryInterface
     private function mapToTrack(array $trackData): Track
     {
         return new Track(
+            $trackData['id'],
             $trackData['artist'],
             $trackData['title'],
             is_int($trackData['price'])

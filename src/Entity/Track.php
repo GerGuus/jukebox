@@ -9,10 +9,16 @@ use App\ValueObject\Money;
 class Track
 {
     public function __construct(
+        private int $id,
         private string $artist,
         private string $title,
         private Money $price,
     ) {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getArtist(): string
