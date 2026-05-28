@@ -13,13 +13,16 @@ use App\Service\ChangeCalculator;
 use App\Service\CoinValidator;
 use App\ValueObject\Money;
 use PHPUnit\Framework\TestCase;
+use Tests\Traits\JukeboxCreatorTrait;
 
 final class JukeboxTest extends TestCase
 {
+    use JukeboxCreatorTrait;
+
     public function testStoreSelectedTrack(): void
     {
         $jukebox = $this->createJukebox();
-        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
+        $track = new Track(1, 'Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
         $jukebox->setSelectedTrack($track);
 
@@ -39,7 +42,7 @@ final class JukeboxTest extends TestCase
     public function testResetClearsSelectedTrackAndAmount(): void
     {
         $jukebox = $this->createJukebox();
-        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
+        $track = new Track(1, 'Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
         $jukebox->setSelectedTrack($track);
         $jukebox->addInsertedAmount(Money::createFromCents(100));
@@ -47,14 +50,5 @@ final class JukeboxTest extends TestCase
 
         self::assertNull($jukebox->getSelectedTrack());
         self::assertEquals(0.0, $jukebox->getInsertedAmount()->toCents());
-    }
-
-    private function createJukebox(): Jukebox
-    {
-        return  new Jukebox(
-            $this->createMock(TrackRepositoryInterface::class),
-            new CoinValidator(),
-            new ChangeCalculator()
-        );
     }
 }

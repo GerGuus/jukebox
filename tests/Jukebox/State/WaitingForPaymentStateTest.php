@@ -5,26 +5,20 @@ declare(strict_types=1);
 namespace Tests\Jukebox\State;
 
 use App\Entity\Track;
-use App\Jukebox\Jukebox;
 use App\Jukebox\State\WaitingForPaymentState;
-use App\Repository\TrackRepository;
-use App\Repository\TrackRepositoryInterface;
-use App\Service\ChangeCalculator;
-use App\Service\CoinValidator;
 use App\ValueObject\Money;
 use PHPUnit\Framework\TestCase;
 use Tests\Helpers\OutputCaptureHelper;
+use Tests\Traits\JukeboxCreatorTrait;
 
 final class WaitingForPaymentStateTest extends TestCase
 {
+    use JukeboxCreatorTrait;
+
     public function testInvalidCoin(): void
     {
-        $jukebox = new Jukebox(
-            $this->createMock(TrackRepositoryInterface::class),
-            new CoinValidator(),
-            new ChangeCalculator()
-        );
-        $jukebox->setSelectedTrack(new Track('Oomph', 'Labyrinth', Money::createFromCents(150)));
+        $jukebox = $this->createJukebox();
+        $jukebox->setSelectedTrack(new Track(1, 'Oomph', 'Labyrinth', Money::createFromCents(150)));
 
         $state = new WaitingForPaymentState($jukebox);
 
@@ -38,12 +32,8 @@ final class WaitingForPaymentStateTest extends TestCase
 
     public function testAddsInsertedAmountForValidCoin(): void
     {
-        $jukebox = new Jukebox(
-            $this->createMock(TrackRepositoryInterface::class),
-            new CoinValidator(),
-            new ChangeCalculator()
-        );
-        $jukebox->setSelectedTrack(new Track('Oomph', 'Labyrinth', Money::createFromCents(150)));
+        $jukebox = $this->createJukebox();
+        $jukebox->setSelectedTrack(new Track(1, 'Oomph', 'Labyrinth', Money::createFromCents(150)));
 
         $state = new WaitingForPaymentState($jukebox);
 
@@ -54,12 +44,8 @@ final class WaitingForPaymentStateTest extends TestCase
 
     public function testPrintsRemainingAmountWhenNotEnoughMoney(): void
     {
-        $jukebox = new Jukebox(
-            $this->createMock(TrackRepositoryInterface::class),
-            new CoinValidator(),
-            new ChangeCalculator()
-        );
-        $jukebox->setSelectedTrack(new Track('Oomph', 'Labyrinth', Money::createFromCents(150)));
+        $jukebox = $this->createJukebox();
+        $jukebox->setSelectedTrack(new Track(1, 'Oomph', 'Labyrinth', Money::createFromCents(150)));
 
         $state = new WaitingForPaymentState($jukebox);
 

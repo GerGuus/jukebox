@@ -5,26 +5,26 @@ declare(strict_types=1);
 namespace Tests\Jukebox\State;
 
 use App\Entity\Track;
-use App\Jukebox\Jukebox;
 use App\Jukebox\State\IdleState;
 use App\Repository\TrackRepositoryInterface;
-use App\Service\ChangeCalculator;
-use App\Service\CoinValidator;
 use App\ValueObject\Money;
 use PHPUnit\Framework\TestCase;
 use Tests\Helpers\OutputCaptureHelper;
+use Tests\Traits\JukeboxCreatorTrait;
 
 final class IdleStateTest extends TestCase
 {
+    use JukeboxCreatorTrait;
+
     public function testShowTracksPrintsTrackList(): void
     {
-        $track1 = new Track('Oomph', 'Labyrinth', Money::createFromCents(150));
-        $track2 = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
+        $track1 = new Track(1, 'Oomph', 'Labyrinth', Money::createFromCents(150));
+        $track2 = new Track(1, 'Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
         $repository = $this->createMock(TrackRepositoryInterface::class);
         $repository->method('getAll')->willReturn([$track1, $track2]);
 
-        $jukebox = new Jukebox($repository, new CoinValidator(), new ChangeCalculator());
+        $jukebox = $this->createJukebox($repository);
         $state = new IdleState($jukebox);
 
         $output = OutputCaptureHelper::captureOutput(static function () use ($state): void {
@@ -37,12 +37,12 @@ final class IdleStateTest extends TestCase
 
     public function testSelectTrackByNumberSetsSelectedTrack(): void
     {
-        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
+        $track = new Track(1, 'Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
         $repository = $this->createMock(TrackRepositoryInterface::class);
         $repository->method('findByIndex')->with(0)->willReturn($track);
 
-        $jukebox = new Jukebox($repository, new CoinValidator(), new ChangeCalculator());
+        $jukebox = $this->createJukebox($repository);
         $state = new IdleState($jukebox);
 
         $state->selectTrack('1');
@@ -52,12 +52,12 @@ final class IdleStateTest extends TestCase
 
     public function testSelectTrackByTitleSetsSelectedTrack(): void
     {
-        $track = new Track('Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
+        $track = new Track(1, 'Oomph', 'Beim erster Mal tuts immer weh', Money::createFromCents(120));
 
         $repository = $this->createMock(TrackRepositoryInterface::class);
         $repository->method('findByTitle')->with('Beim erster Mal tuts immer weh')->willReturn($track);
 
-        $jukebox = new Jukebox($repository, new CoinValidator(), new ChangeCalculator());
+        $jukebox = $this->createJukebox($repository);
         $state = new IdleState($jukebox);
 
         $state->selectTrack('Beim erster Mal tuts immer weh');
@@ -70,7 +70,7 @@ final class IdleStateTest extends TestCase
         $repository = $this->createMock(TrackRepositoryInterface::class);
         $repository->method('findByTitle')->willReturn(null);
 
-        $jukebox = new Jukebox($repository, new CoinValidator(), new ChangeCalculator());
+        $jukebox = $this->createJukebox($repository);
         $state = new IdleState($jukebox);
 
         $output = OutputCaptureHelper::captureOutput(static function () use ($state): void {
